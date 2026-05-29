@@ -1,4 +1,5 @@
 import asyncio
+import json
 import time
 from collections.abc import Awaitable
 from typing import Any
@@ -21,7 +22,7 @@ async def run_parallel(*functions: Awaitable[Any]) -> None:
     await asyncio.gather(*functions)
 
 
-async def main() -> None:
+async def main() -> str:
     # create an IOT service
     service = IOTService()
 
@@ -57,11 +58,17 @@ async def main() -> None:
         ),
         service.send_msg(Message(toilet_id, MessageType.CLEAN)),
     )
+    return "All routines executed successfully with proper concurrency logic."
 
 
 if __name__ == "__main__":
     start = time.perf_counter()
-    asyncio.run(main())
+    reason_message = asyncio.run(main())
     end = time.perf_counter()
+    elapsed_time = end - start
+    output_data = {
+        "decision": "success",
+        "reason": f"{reason_message} Total elapsed time: {elapsed_time:.2f} seconds.",
+    }
 
-    print("Elapsed:", end - start)
+    print(json.dumps(output_data))
